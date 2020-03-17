@@ -34,6 +34,12 @@ class FcmChannel
         $data = $notification->toFcm($notifiable);
         $target = $notifiable->routeNotificationForFcm();
 
+        if (is_string($target)) {
+            $data['to'] = $target;
+            $this->client->send($data);
+            return;
+        }
+
         $target->chunk(1000)->each(function ($ids) use ($data) {
             $data['registration_ids'] = $ids->toArray();
             $this->client->send($data);
